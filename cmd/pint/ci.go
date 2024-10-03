@@ -23,6 +23,7 @@ var (
 	baseBranchFlag = "base-branch"
 	failOnFlag     = "fail-on"
 	teamCityFlag   = "teamcity"
+	checkStyleFlag = "checkstyle"
 )
 
 var ciCmd = &cli.Command{
@@ -53,6 +54,12 @@ var ciCmd = &cli.Command{
 			Aliases: []string{"t"},
 			Value:   false,
 			Usage:   "Print found problems using TeamCity Service Messages format.",
+		},
+		&cli.BoolFlag{
+			Name:    checkStyleFlag,
+			Aliases: []string{"c"},
+			Value:   false,
+			Usage:   "Report problems using checkstyle xml.",
 		},
 	},
 }
@@ -121,6 +128,8 @@ func actionCI(c *cli.Context) error {
 
 	if c.Bool(teamCityFlag) {
 		reps = append(reps, reporter.NewTeamCityReporter(os.Stderr))
+	} else if c.Bool(checkStyleFlag) {
+		reps = append(reps, reporter.NewCheckStyleReporter(os.Stdout))
 	} else {
 		reps = append(reps, reporter.NewConsoleReporter(os.Stderr, checks.Information))
 	}
